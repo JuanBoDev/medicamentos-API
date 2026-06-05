@@ -8,14 +8,13 @@ class MedicationCard extends StatelessWidget {
   final MedicationModel medication;
   const MedicationCard({super.key, required this.medication});
 
-  // Diálogo de confirmación antes de eliminar
   Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Eliminar medicamento'),
         content: Text(
-          '¿Estás seguro que deseas eliminar "${medication.name}"? Esta acción no se puede deshacer.',
+          '¿Eliminar "${medication.name}"? Esta acción no se puede deshacer.',
         ),
         actions: [
           TextButton(
@@ -33,7 +32,6 @@ class MedicationCard extends StatelessWidget {
         ],
       ),
     );
-
     if (confirmed == true && context.mounted) {
       await context.read<MedicationProvider>().removeMedication(medication.id!);
     }
@@ -63,7 +61,7 @@ class MedicationCard extends StatelessWidget {
             ),
             const SizedBox(width: 12),
 
-            // Información central (expande)
+            // Información central
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,12 +71,35 @@ class MedicationCard extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
-                  Text('${medication.laboratory} · ${medication.dose}'),
-                  if (medication.doseForm.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(medication.doseForm),
-                  ],
-                  const SizedBox(height: 8),
+                  Text(
+                    medication.laboratory,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 4),
+                  // Badge tipo: Tableta o Jarabe
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: medication.type == 'Tableta'
+                          ? Colors.blue[50]
+                          : Colors.orange[50],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      medication.type,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: medication.type == 'Tableta'
+                            ? Colors.blue[700]
+                            : Colors.orange[700],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Badge stock
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -88,13 +109,21 @@ class MedicationCard extends StatelessWidget {
                       color: stockBajo ? Colors.orange[50] : Colors.green[50],
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text('Stock: ${medication.stock}'),
+                    child: Text(
+                      'Stock: ${medication.stock}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: stockBajo
+                            ? Colors.orange[700]
+                            : Colors.green[700],
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
 
-            // Precio y botones (derecha)
+            // Precio y botones derecha
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -106,7 +135,11 @@ class MedicationCard extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, size: 20),
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 20,
+                        color: Colors.green,
+                      ),
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -30,15 +30,14 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
     super.dispose();
   }
 
+  // El buscador filtra por name, laboratory y type
   List<MedicationModel> _filterMedications(List<MedicationModel> medications) {
     final term = _searchTerm.trim().toLowerCase();
     if (term.isEmpty) return medications;
     return medications.where((m) {
       return m.name.toLowerCase().contains(term) ||
           m.laboratory.toLowerCase().contains(term) ||
-          m.doseValue.toLowerCase().contains(term) ||
-          m.doseUnit.toLowerCase().contains(term) ||
-          m.doseForm.toLowerCase().contains(term);
+          m.type.toLowerCase().contains(term);
     }).toList();
   }
 
