@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/medication_model.dart';
 import '../../providers/medication_provider.dart';
@@ -114,6 +115,12 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                   ),
                   child: TextField(
                     controller: _searchCtrl,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(
+                        // Deniega cualquier caracter que NO sea letra o espacio
+                        RegExp(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]'),
+                      ),
+                    ],
                     onChanged: (value) => setState(() {
                       _searchTerm = value;
                     }),
