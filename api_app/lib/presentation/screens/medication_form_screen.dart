@@ -93,6 +93,11 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
               TextFormField(
                 controller: _nameCtrl,
                 maxLength: 35,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(
+                    RegExp(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]'),
+                  ),
+                ],
                 decoration: _inputDecoration('Nombre', Icons.medication),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Ingresa el nombre';
@@ -105,6 +110,13 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
               TextFormField(
                 controller: _labCtrl,
                 maxLength: 35,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(
+                    RegExp(
+                      r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]',
+                    ), // Deniega todo lo que NO sea letras, acentos, ñ o espacio
+                  ),
+                ],
                 decoration: _inputDecoration('Laboratorio', Icons.business),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Ingresa el laboratorio';
@@ -121,14 +133,21 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
                 ),
                 // Solo permite números y punto decimal
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^\d{1,3}\.?\d{0,2}$'),
+                  ),
                 ],
                 decoration: _inputDecoration('Precio', Icons.attach_money),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Ingresa el precio';
-                  if (double.tryParse(v) == null) return 'Precio inválido';
-                  if (double.parse(v) <= 0)
+                  if (v == null || v.isEmpty) {
+                    return 'Ingresa el precio';
+                  }
+                  if (double.tryParse(v) == null) {
+                    return 'Precio inválido';
+                  }
+                  if (double.parse(v) <= 0) {
                     return 'El precio debe ser mayor a 0';
+                  }
                   return null;
                 },
               ),
@@ -143,9 +162,15 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: _inputDecoration('Stock', Icons.inventory),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Ingresa el stock';
-                  if (int.tryParse(v) == null) return 'Stock inválido';
-                  if (int.parse(v) < 0) return 'El stock no puede ser negativo';
+                  if (v == null || v.isEmpty) {
+                    return 'Ingresa el stock';
+                  }
+                  if (int.tryParse(v) == null) {
+                    return 'Stock inválido';
+                  }
+                  if (int.parse(v) < 0) {
+                    return 'El stock no puede ser negativo';
+                  }
                   return null;
                 },
               ),
@@ -153,7 +178,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
 
               // Tipo — dropdown Tableta o Jarabe
               DropdownButtonFormField<String>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 decoration: _inputDecoration('Tipo', Icons.category),
                 items: _types
                     .map(
